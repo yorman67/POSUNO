@@ -1,25 +1,16 @@
-﻿using POSUNO.Helpers;
+﻿using POSUNO.Components;
+using POSUNO.Helpers;
+using POSUNO.Models;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 
 
 namespace POSUNO.Pages
 {
-  
+
     public sealed partial class LoginPage : Page
     {
         public LoginPage()
@@ -27,7 +18,7 @@ namespace POSUNO.Pages
             this.InitializeComponent();
         }
 
-        private async void LoginButton_Click (object sender, RoutedEventArgs e)
+        private async void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             bool isValid = await ValidForm();
             if (!isValid)
@@ -35,8 +26,36 @@ namespace POSUNO.Pages
                 return;
             }
 
-            MessageDialog messageDialog = new MessageDialog("VAMOS BIEN", "OK");
-            await messageDialog.ShowAsync();
+            Loader loader = new Loader("Por favor espere...");
+            loader.Show();
+
+            Response response = await ApiService.LoginAsync(new LoginRequest
+            {
+                Email = EmailTextBox.Text,
+                Password = PasswordPasswordBox.Password
+            });
+
+            loader.Close();
+
+            MessageDialog messageDialog;
+            if (!response.IsSuccess)
+            {
+                messageDialog = new MessageDialog(response.Message, "Error");
+                await messageDialog.ShowAsync();
+                return;
+            }
+
+            User user = (User)response.Result;
+            if (user == null)
+            {
+                messageDialog = new MessageDialog("Usuario o clave incorrecta", "Error");
+                await messageDialog.ShowAsync();
+                return;
+            }
+
+            Frame.Navigate(typeof(MainPage), user);
+
+
         }
 
         private async Task<bool> ValidForm()
@@ -56,11 +75,11 @@ namespace POSUNO.Pages
                 await messageDialog.ShowAsync();
                 return false;
             }
-         
 
-            if (string.IsNullOrEmpty(PasswordPasswordBox.Password))
+
+            if (PasswordPasswordBox.Password.Length < 6)
             {
-                messageDialog = new MessageDialog("Debes ingresar tu clave", "ERROR");
+                messageDialog = new MessageDialog("Debes ingresar una clave de almenos 6 caracteres", "ERROR");
                 await messageDialog.ShowAsync();
                 return false;
             }

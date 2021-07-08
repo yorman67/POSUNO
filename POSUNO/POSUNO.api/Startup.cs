@@ -29,6 +29,9 @@ namespace POSUNO.api
             services.AddDbContext<DataContext>(cfg => {
                 cfg.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
+
+            services.AddTransient<SeedDB>();
+
         }
 
      
