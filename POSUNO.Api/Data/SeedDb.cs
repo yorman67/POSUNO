@@ -23,8 +23,8 @@ namespace POSUNO.Api.Data
         {
             await _context.Database.EnsureCreatedAsync();
             await CheckRolesAsync();
-            await CheckUserAsync("Juan", "Zuluaga", "juan@yopmail.com", "322 311 4620");
-            await CheckUserAsync("Ledys", "Bedoya", "ledys@yopmail.com", "322 311 4620");
+            await CheckUserAsync("Yorman", "MArtinez", "yorman@yopmail.com", "302 317 06 01");
+            await CheckUserAsync("Dilan", "Hoyos", "dila@yopmail.com", "302 317 06 01");
             await CheckCustomersAsync();
             await CheckProductsAsync();
         }
