@@ -30,6 +30,7 @@ namespace POSUNO.Pages
             base.OnNavigatedTo(e);
             User = (User)e.Parameter;
             WelcomeTextBlock.Text = $"{User.FullName}";
+            MyFrame.Navigate(typeof(CustomersPage));
         }
 
        private async void LogoutImage_Tapped (object sender, TappedRoutedEventArgs e)
